@@ -1,101 +1,109 @@
-import Image from "next/image";
+'use client'
 
-export default function Home() {
+import Image from "next/image";
+import { useState } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+
+type ImageBody = {
+  hero: string;
+  thumbnail: string;
+};
+
+export default function Lightbox() {
+  const Images: ImageBody[] = [
+    {
+      hero: "https://placehold.co/1280x720.png?text=Image+1",
+      thumbnail: "https://placehold.co/640x360.png?text=Thumb+1",
+    },
+    {
+      hero: "https://placehold.co/1280x720.png?text=Image+2",
+      thumbnail: "https://placehold.co/640x360.png?text=Thumb+2",
+    },
+    {
+      hero: "https://placehold.co/1280x720.png?text=Image+3",
+      thumbnail: "https://placehold.co/640x360.png?text=Thumb+3",
+    },
+    {
+      hero: "https://placehold.co/1280x720.png?text=Image+4",
+      thumbnail: "https://placehold.co/640x360.png?text=Thumb+4",
+    },
+    {
+      hero: "https://placehold.co/1280x720.png?text=Image+5",
+      thumbnail: "https://placehold.co/640x360.png?text=Thumb+5",
+    }
+  ];
+
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const nextImage = () => {
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % Images.length);
+  };
+
+  const prevImage = () => {
+    setCurrentIndex((prevIndex) =>
+      prevIndex === 0 ? Images.length - 1 : prevIndex - 1
+    );
+  };
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
+    <div className="container mx-auto px-4 py-8 space-y-6">
+      {/* Main Image Container */}
+      <div className="relative w-full max-w-5xl mx-auto aspect-video bg-gray-100 rounded-xl shadow-lg overflow-hidden">
         <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
+          src={Images[currentIndex].hero}
+          alt="Hero image"
+          fill
+          className="object-cover transition-opacity duration-300"
           priority
         />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+        
+        {/* Navigation Buttons */}
+        <button
+          onClick={prevImage}
+          className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 text-white p-3 rounded-full hover:bg-black/75 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-white"
+        >
+          <ChevronLeft className="w-6 h-6" />
+        </button>
+        
+        <button
+          onClick={nextImage}
+          className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 text-white p-3 rounded-full hover:bg-black/75 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-white"
+        >
+          <ChevronRight className="w-6 h-6" />
+        </button>
+      </div>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+      {/* Thumbnail Gallery */}
+      <div className="max-w-5xl mx-auto">
+        <div className="grid grid-cols-3 md:grid-cols-5 gap-4">
+          {Images.map((image, i) => (
+            <button
+              key={i}
+              onClick={() => setCurrentIndex(i)}
+              className={`
+                relative aspect-video rounded-lg overflow-hidden
+                ${currentIndex === i 
+                  ? 'ring-2 ring-blue-500 scale-95 transform'
+                  : 'hover:ring-2 hover:ring-blue-400 hover:scale-95'
+                }
+                transition-all duration-200 ease-in-out
+                focus:outline-none focus:ring-2 focus:ring-blue-500
+              `}
+            >
+              <Image
+                src={image.thumbnail}
+                alt={`Thumbnail ${i + 1}`}
+                fill
+                className={`
+                  object-cover
+                  ${currentIndex === i ? 'brightness-90' : 'hover:brightness-75'}
+                  transition-all duration-200
+                `}
+              />
+            </button>
+          ))}
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </div>
     </div>
   );
 }
